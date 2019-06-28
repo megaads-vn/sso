@@ -10,15 +10,19 @@ class SsoController {
         return $redirectUrl;
     }
 
-    public static function getUser ($token) {
+    public static function getUser ($token, $appId) {
         $retval = false;
 
-        $getUserUrl = \Config::get('sso.server') . "/sso/auth?token=$token";
+        $getUserUrl = \Config::get('sso.server') . "/sso/auth?token=$token&app_id=$appId";
         $response = self::sendRequest($getUserUrl);
         $response = json_decode($response);
 
-        if ($response->status == 'success' && $response->code == 0 && $response->user) {
+        if ($response && $response->status == 'success' && $response->code == 0 && $response->user) {
             $retval =  $response->user;
+        } else if ($response) {
+            echo "$response->msg"; die;
+         } else {
+            echo "Connect to Megaads ID lost!"; die;
         }
 
         return $retval;
