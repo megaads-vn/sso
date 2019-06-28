@@ -2,18 +2,24 @@
 
 namespace Megaads\Sso;
 
+use Config;
+
 class SsoController {
     public static function getRedirectUrl () {
-        $callbackUrl = \Config::get('sso.callback_url');
+        $callbackUrl = Config::get('sso.callback_url');
         $encodedCallbackUrl = urlencode($callbackUrl);
-        $redirectUrl = \Config::get('sso.server') . "/system/home/login?continue=$encodedCallbackUrl";
+        $redirectUrl = Config::get('sso.server') . "/system/home/login?continue=$encodedCallbackUrl";
         return $redirectUrl;
     }
 
-    public static function getUser ($token, $appId) {
+    public static function getUser ($token, $appId = 0) {
         $retval = false;
 
-        $getUserUrl = \Config::get('sso.server') . "/sso/auth?token=$token&app_id=$appId";
+        if ($appId == 0 && Config::get('sso.app_id')) {
+            $appId = Config::get('sso.app_id');
+        }
+
+        $getUserUrl = Config::get('sso.server') . "/sso/auth?token=$token&app_id=$appId";
         $response = self::sendRequest($getUserUrl);
         $response = json_decode($response);
 
