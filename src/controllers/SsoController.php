@@ -8,39 +8,23 @@ class SsoController {
     public static function getRedirectUrl () {
         $callbackUrl = Config::get('sso.callback_url');
         $encodedCallbackUrl = urlencode($callbackUrl);
-        $redirectUrl = Config::get('sso.server') . '' . Config::get('sso.login_path') . "?continue=$encodedCallbackUrl";
+        $redirectUrl = Config::get('sso.server') . "/system/home/login?continue=$encodedCallbackUrl";
         return $redirectUrl;
     }
 
     public static function getUser ($token, $appId = 0) {
         $retval = false;
-        $params = Config::get('sso.auth_params');
-        $urlParams = '';
-        $getUserUrl  = Config::get('sso.server');
-        $authPath = Config::get('sso.auth_path');
-        $getUserUrl .= $authPath;
-        if ( count($params) > 0 ) {
-            foreach ( $params as $key => $val ) {
-                if ( $key == 'token' && $val == '' ) {
-                    $val = $token;
-                }
-                if ( $key == 'app_id' && $val == '' ) {
-                    $val = $appId;
-                }
-                $urlParams .= $key . '=' . $val . '&';
-            }
-            $urlParams = rtrim($urlParams,'&');
-            $getUserUrl .= '?' . $urlParams;
-        } 
+
+        if ($appId == 0 && Config::get('sso.app_id')) {
+            $appId = Config::get('sso.app_id');
+        }
+
+        $getUserUrl = Config::get('sso.server') . "/sso/auth?token=$token&app_id=$appId";
         $response = self::sendRequest($getUserUrl);
         $response = json_decode($response);
 
         if ($response && $response->status == 'success' && $response->code == 0 && $response->user) {
             $retval =  $response->user;
-        } else if ($response) {
-            echo "$response->msg"; die;
-         } else {
-            echo "Connect to Megaads ID lost!"; die;
         }
 
         return $retval;
