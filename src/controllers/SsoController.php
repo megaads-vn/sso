@@ -37,6 +37,10 @@ class SsoController {
 
         if ($response && $response->status == 'success' && $response->code == 0 && $response->user) {
             $retval =  $response->user;
+        } else if ($response) {
+            echo "$response->msg"; die;
+         } else {
+            echo "Connect to Megaads ID lost!"; die;
         }
 
         return $retval;
