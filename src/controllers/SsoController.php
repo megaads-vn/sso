@@ -19,7 +19,13 @@ class SsoController {
             $appId = Config::get('sso.app_id');
         }
 
-        $getUserUrl = Config::get('sso.server') . "/sso/auth?token=$token&app_id=$appId";
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? urlencode($_SERVER['REMOTE_ADDR']) : '';
+        $url = \Session::has('redirect_url') ? urlencode(\Session::get('redirect_url')) : '';
+        $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? urlencode($_SERVER['HTTP_USER_AGENT']) : '';
+        $domain = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '');
+        $domain = urlencode($domain);
+        $getUserUrl = Config::get('sso.server') . "/sso/auth?token=$token&app_id=$appId&ip=$ip&url=$url&user_agent=$user_agent&domain=$domain";
+        
         $response = self::sendRequest($getUserUrl);
         $response = json_decode($response);
 
