@@ -48,13 +48,7 @@ class SsoController {
           CURLOPT_TIMEOUT => 30,
           CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
           CURLOPT_CUSTOMREQUEST => "GET",
-          CURLOPT_HTTPHEADER => array(
-            "Accept: */*",
-            "Cache-Control: no-cache",
-            "Connection: keep-alive",
-            "accept-encoding: gzip, deflate",
-            "cache-control: no-cache",
-          ),
+          CURLOPT_SSL_VERIFYPEER => false
         ));
 
         $response = curl_exec($curl);
