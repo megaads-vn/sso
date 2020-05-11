@@ -1,6 +1,7 @@
 {
     "name": "megaads/sso",
     "description": "",
+    "license": "MIT",
     "authors": [
         {
             "name": "Megaads",
