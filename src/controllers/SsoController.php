@@ -5,8 +5,7 @@ namespace Megaads\Sso;
 use Config;
 
 class SsoController {
-    public static function getRedirectUrl () {
-        $httpHost = "http://{$_SERVER['HTTP_HOST']}";
+    public static function getRedirectUrl ($httpHost='') {
         $callbackUrl = Config::get('sso.callback_url');
         $encodedCallbackUrl = urlencode($httpHost . $callbackUrl);
         $redirectUrl = Config::get('sso.server') . "/system/home/login?continue=$encodedCallbackUrl";
