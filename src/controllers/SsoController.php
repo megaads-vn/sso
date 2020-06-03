@@ -3,6 +3,9 @@
 namespace Megaads\Sso;
 
 use Config;
+use Cache;
+use Carbon\Carbon;
+use Session;
 
 class SsoController {
     public static function getRedirectUrl ($httpHost='') {
@@ -20,7 +23,7 @@ class SsoController {
         }
 
         $ip = isset($_SERVER['REMOTE_ADDR']) ? urlencode($_SERVER['REMOTE_ADDR']) : '';
-        $url = \Session::has('redirect_url') ? urlencode(\Session::get('redirect_url')) : '';
+        $url = Session::has('redirect_url') ? urlencode(Session::get('redirect_url')) : '';
         $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? urlencode($_SERVER['HTTP_USER_AGENT']) : '';
         $domain = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '');
         $domain = urlencode($domain);
@@ -34,6 +37,44 @@ class SsoController {
         }
 
         return $retval;
+    }
+
+    public static function ssoTokenValidation() {
+        $retval = false;
+        $token = Session::get('token', NULL);
+
+        if ($token) {
+            $retval = self::storageData('token_validation_' . $token);
+        }
+        if ($token && Session::has("user") && !$retval) {
+            $user = Session::get("user");
+            $token = Session::get("token");
+            $ssoUser = self::getUser($token);
+            if ($ssoUser && str_replace(".", "", $user->email) == str_replace(".", "", $ssoUser->email)) {
+                $retval = true;
+            }
+            self::storageData('token_validation_' . $token, $retval, 5);
+        }
+        return $retval;
+    }
+
+    private static function storageData($key, $value = '', $minutes = -1) {
+        if ($value == '' && $minutes <= 0 && $key != '') {
+            return Cache::get($key, NULL);
+        } else {
+            $expireAt = Carbon::now()->addMinute($minutes);
+            Cache::put($key, $value, $expireAt);
+        }
+    }
+
+    public static function removeTokenValidationCache() {
+        $token = Session::get("token");
+        if ($token) {
+            $key = 'token_validation_' . $token;
+            if (Cache::has($key)) {
+                Cache::forget($key);
+            }
+        }
     }
 
     public static function sendRequest ($url) {
