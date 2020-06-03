@@ -5,9 +5,12 @@ namespace Megaads\Sso;
 use Config;
 use Cache;
 use Carbon\Carbon;
+use Illuminate\Routing\Controller;
+use Log;
 use Session;
 
-class SsoController {
+class SsoController extends Controller {
+
     public static function getRedirectUrl ($httpHost='') {
         $callbackUrl = Config::get('sso.callback_url');
         $encodedCallbackUrl = urlencode($httpHost . $callbackUrl);
@@ -98,7 +101,7 @@ class SsoController {
         curl_close($curl);
 
         if ($err) {
-
+            Log::error('SSO_PACKAGE_REQUEST: ' . $err);
         } else {
             $retval = $response;
         }
