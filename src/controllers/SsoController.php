@@ -1,6 +1,6 @@
 <?php
 
-namespace Megaads\Sso;
+namespace Megaads\Controllers\Sso;
 
 use Config;
 use Cache;
