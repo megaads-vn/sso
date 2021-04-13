@@ -7,7 +7,7 @@ class SsoServiceProvider extends ServiceProvider
 {
     public function boot() {
         $this->package('megaads/sso');
-        include __DIR__ . '/../../customFilters.php';
+        include __DIR__ . '/customFilters.php';
     }
 
     public function register() {
