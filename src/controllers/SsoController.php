@@ -17,7 +17,9 @@ class SsoController {
         $response = self::sendRequest($getUserUrl);
         $response = json_decode($response);
 
-        if ($response->status == 'success' && $response->code == 0 && $response->user) {
+        if (isset($response->status) && $response->status == 'success'
+         && (isset($response->code) && $response->code == 0)
+          && (isset($response->user) && !empty($response->user))) {
             $retval =  $response->user;
         }
 
