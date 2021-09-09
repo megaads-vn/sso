@@ -42,11 +42,11 @@ class SsoController extends Controller {
         return $retval;
     }
 
-    public static function ssoTokenValidation() {
+    public static function ssoTokenValidation($useCache = true) {
         $retval = false;
         $token = Session::get('token', NULL);
 
-        if ($token) {
+        if ($token && $useCache) {
             $retval = self::storageData('token_validation_' . $token);
         }
         if ($token && Session::has("user") && !$retval) {
