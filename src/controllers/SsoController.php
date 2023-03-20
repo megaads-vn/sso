@@ -1,8 +1,9 @@
 <?php
 
-namespace Megaads\Sso;
+namespace Megaads\Sso\Controllers;
 
 class SsoController {
+    
     public static function getRedirectUrl () {
         $callbackUrl = \Config::get('sso.callback_url');
         $encodedCallbackUrl = urlencode($callbackUrl);
